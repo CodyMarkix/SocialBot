@@ -4,5 +4,12 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.exclude": {
+			".git": true,
+			"LICENSE": true,
+			"package-lock.json": true,
+			"node_modules": true
+		}
+	}
 }
