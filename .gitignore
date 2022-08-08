@@ -1,3 +1,6 @@
-config.json
+.env
 dist/**/*
 node_modules/
+app/node_modules/
+app/public/build
+app/.DS_Store
