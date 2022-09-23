@@ -5,7 +5,7 @@ const ready: ClientEvent = {
     name: 'ready',
     once: true,
     execute(client: Client) {
-        console.log("Client is ready!")
+        console.log("Discord client is ready!")
         client.user?.setPresence({
             activities: [
                 {
