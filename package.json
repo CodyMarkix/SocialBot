@@ -1,0 +1,27 @@
+{
+  "name": "social-bot",
+  "version": "1.0.0",
+  "description": "SocialBot Discord bot",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "deploy-cmd": "node deploy-commands.js",
+    "start": "cd dist/ && node index.js && cd ../",
+    "dev": "cd dist/ && tsc -w -p .."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodyMarkix/SocialBot.git"
+  },
+  "author": "CodyMarkix, A2noh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CodyMarkix/SocialBot/issues"
+  },
+  "homepage": "https://github.com/CodyMarkix/SocialBot#readme",
+  "dependencies": {
+    "@discordjs/builders": "^1.2.0",
+    "discord.js": "^14.4.0",
+    "dotenv": "^16.0.2"
+  }
+}
