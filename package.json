@@ -15,7 +15,8 @@
     "type": "git",
     "url": "git+https://github.com/CodyMarkix/SocialBot.git"
   },
-  "author": "CodyMarkix, A2noh",
+  "author": "CodyMarkix",
+  "contributors": ["CodyMarkix", "A2noh"],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/CodyMarkix/SocialBot/issues"
