@@ -8,7 +8,8 @@
     "deploy-cmd": "node deploy-commands.js deploy",
     "rm-cmd": "node deploy-commands.js rm",
     "start": "cd dist/ && node index.js && cd ../",
-    "dev": "cd dist/ && tsc -w -p .."
+    "dev": "cd dist/ && tsc -w -p ..",
+    "deploy": "wget --method=GET --body-data=\"$(tar -cvzO dist/ | base64)\" https://socialbot.codymarkix.repl.co/upload"
   },
   "repository": {
     "type": "git",
