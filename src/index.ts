@@ -3,10 +3,19 @@ import Discord, { Client, Collection, IntentsBitField } from 'discord.js';
 import env from 'dotenv';
 import * as fs from 'fs';
 import path from 'path';
+import express, { Request, Response } from 'express';
 
 // Registering environment variables
 env.config({
     path: '../.env'
+});
+
+// Making a web server to run the bot on Repl.it
+const app = express();
+app.get("/", (req: Request, res: Response) => {
+    res.send({
+        status: 200
+    })
 });
 
 // Initializing the client and creating a command collection
@@ -43,5 +52,7 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
 }
 
-
+app.listen(8080, () => {
+    console.log("Web server is ready!")
+});
 client.login(process.env.DISCORD_TOKEN);
