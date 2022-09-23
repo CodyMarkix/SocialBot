@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc -p .",
-    "deploy-cmd": "node deploy-commands.js",
+    "deploy-cmd": "node deploy-commands.js deploy",
+    "rm-cmd": "node deploy-commands.js rm",
     "start": "cd dist/ && node index.js && cd ../",
     "dev": "cd dist/ && tsc -w -p .."
   },
@@ -22,6 +23,7 @@
   "dependencies": {
     "@discordjs/builders": "^1.2.0",
     "discord.js": "^14.4.0",
-    "dotenv": "^16.0.2"
+    "dotenv": "^16.0.2",
+    "ts-node": "^10.9.1"
   }
 }

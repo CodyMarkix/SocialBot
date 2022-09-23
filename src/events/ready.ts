@@ -1,12 +1,11 @@
 import { ActivityType, Client } from "discord.js"
-import { Event } from '../interfaces/event';
+import { ClientEvent } from '../interfaces/events';
 
-module.exports = {
+const ready: ClientEvent = {
     name: 'ready',
     once: true,
     execute(client: Client) {
         console.log("Client is ready!")
-        
         client.user?.setPresence({
             activities: [
                 {
@@ -17,4 +16,6 @@ module.exports = {
         });
 
     }
-}
+};
+
+module.exports = ready;
