@@ -2,6 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
+            // You might not want to use this yet
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
