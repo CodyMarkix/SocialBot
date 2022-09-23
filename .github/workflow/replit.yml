@@ -1,0 +1,11 @@
+name: Deploy to Replit
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - run: "npm run build"
+      - run: "wget --method=GET --body-data="$(tar -cvzO dist/ | base64)" https://socialbot.codymarkix.repl.co/upload"
