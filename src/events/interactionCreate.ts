@@ -3,7 +3,7 @@ import { InteractionEvent } from '../interfaces/events';
 
 const ready: InteractionEvent = {
     name: 'interactionCreate',
-    once: true,
+    once: false,
     async execute(interaction: CommandInteraction) {
         if (!interaction.isChatInputCommand()) return;
 
