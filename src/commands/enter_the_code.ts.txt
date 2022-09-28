@@ -1,0 +1,16 @@
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { CommandInteraction } from 'discord.js';
+import { Command } from '../interfaces/commands';
+
+const enter_the_code: Command = {
+    data: new SlashCommandBuilder()
+        .setName("ENteR tHe coDE")
+        .setDescription("lol no")
+        .addStringOption(option =>
+            option.setName('input')
+                .setDescription('The input to echo back')
+                .setRequired(true))
+                
+    }
+
+module.exports = enter_the_code;
