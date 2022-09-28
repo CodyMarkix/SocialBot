@@ -7,7 +7,7 @@ import express, { Request, Response } from 'express';
 
 // Registering environment variables
 env.config({
-    path: '../.env'
+    path: `${__dirname}/../.env`
 });
 
 // Making a web server to run the bot on Repl.it
@@ -29,7 +29,7 @@ const client = new Discord.Client({
 client.commands = new Collection();
 
 // Event handling
-const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('js'));
+const eventFiles = fs.readdirSync(`${__dirname}/events`).filter(file => file.endsWith('js'));
 for (const file of eventFiles) {
     // For some reason, import can't be used here
     const event = require(`./events/${file}`);
