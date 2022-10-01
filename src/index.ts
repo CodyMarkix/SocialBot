@@ -3,22 +3,27 @@ import Discord, { Client, Collection, IntentsBitField } from 'discord.js';
 import env from 'dotenv';
 import * as fs from 'fs';
 import path from 'path';
-import express, { Request, Response } from 'express';
+import { Sequelize } from 'sequelize';
+import { exec } from 'child_process';
 
 // Registering environment variables
 env.config({
     path: `${__dirname}/../.env`
 });
 
-// Making a web server to run the bot on Repl.it
-const app = express();
-app.get("/", (req: Request, res: Response) => {
-    res.send({
-        status: 200
-    })
-});
+function isProductionEnv() {
+    let command = exec("grep -i PRETTY_NAME /etc/os-release");
+    if (command.stderr) {
+        return false
+    } else if (command.stdout?.read() == "PRETTY_NAME=\"Debian GNU/Linux 11 (bullseye)\"") {
+        console.log(command.stdout)
+        return true
+    } else {
+        return false
+    }
+}
 
-// Initializing the client and creating a command collection
+// Initializing the client, database and creating a command collection
 const client = new Discord.Client({
     intents: [
         // IDK why but Discord changed Intents to IntentsBitField
@@ -26,6 +31,17 @@ const client = new Discord.Client({
         IntentsBitField.Flags.GuildMessages
     ]
 });
+
+const dbhost = isProductionEnv() ? 'localhost' : '192.168.0.100';
+export const sequelize = new Sequelize({
+    dialect: 'mysql',
+    host: '192.168.0.100',
+    port: 3306,
+    username: 'root',
+    password: 'root19857',
+    database: `socialbot_${process.env.DBTYPE}`
+});
+
 client.commands = new Collection();
 
 // Event handling
@@ -52,7 +68,13 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
 }
 
-app.listen(8080, () => {
-    console.log("Web server is ready!")
-});
+try {
+    sequelize.authenticate();
+    (async () => {
+        await sequelize.sync({ force: true});
+    })() // Idk why this works but it does, please don't change it
+    console.log(`Database ${sequelize.getDatabaseName()} ready!`);
+} catch (err) {
+    console.error('Connecting to the database failed!', err)
+}
 client.login(process.env.DISCORD_TOKEN);
