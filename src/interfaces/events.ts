@@ -1,4 +1,4 @@
-import { Client, CommandInteraction } from "discord.js";
+import { Client, CommandInteraction, GuildMember, Message } from "discord.js";
 
 export interface ClientEvent {
     name: string;
@@ -10,4 +10,16 @@ export interface InteractionEvent {
     name: string;
     once: boolean;
     execute(interaction: CommandInteraction): void
+}
+
+export interface MemberEvent {
+    name: string;
+    once: boolean;
+    execute(member: GuildMember): void
+}
+
+export interface MessageEvent {
+    name: string;
+    once: boolean;
+    execute(message: Message): void
 }

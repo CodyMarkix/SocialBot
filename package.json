@@ -2,14 +2,13 @@
   "name": "social-bot",
   "version": "1.0.0",
   "description": "SocialBot Discord bot",
-  "main": "dist/index.js",
   "scripts": {
     "build": "tsc -p .",
-    "deploy-cmd": "node deploy-commands.js deploy",
-    "rm-cmd": "node deploy-commands.js rm",
+    "clear": "rm -rf dist/**/*",
+    "deploy-cmd": "node scripts/deploy-commands.js deploy",
+    "rm-cmd": "node scripts/deploy-commands.js rm",
     "start": "node dist/index.js",
-    "dev": "cd dist/ && tsc -w -p ..",
-    "deploy": "wget --method=GET --body-data=\"$(tar -cvzO dist/ | base64)\" https://socialbot.codymarkix.repl.co/upload"
+    "dev": "cd dist/ && tsc -w -p .."
   },
   "repository": {
     "type": "git",
@@ -33,6 +32,7 @@
     "express": "^4.18.1",
     "mysql2": "^2.3.3",
     "sequelize": "^6.23.2",
+    "sqlite3": "^5.1.2",
     "ts-node": "^10.9.1"
   }
 }
