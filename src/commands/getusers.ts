@@ -9,7 +9,7 @@ const getusers: Command = {
         .setDescription("db"),
 
     async execute(interaction: CommandInteraction) {
-        interaction.reply(`${User.getTableName()}`)
+        interaction.reply(`Users: ${await User.findAll()}`)
     }
 }
 
