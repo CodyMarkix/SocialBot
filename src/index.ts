@@ -33,16 +33,13 @@ const client = new Discord.Client({
     ]
 });
 
-const dbhost = isProductionEnv() ? 'localhost' : '192.168.0.100';
-const sequelize = new Sequelize({
-    dialect: 'mysql',
-    host: process.env.DB_HOST as string,
-    port: parseInt(process.env.DB_PORT as string),
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: `socialbot_${process.env.DBTYPE}`
+// The database instance
+const sequelize: Sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: `${__dirname}/../db.sqlite3`
 });
 
+// Command collection
 client.commands = new Collection();
 
 // Event handling
@@ -69,13 +66,17 @@ for (const file of commandFiles) {
 }
 
 try {
+    if (!fs.existsSync(`${__dirname}/../db.sqlite3`)) {
+        console.log("Why the FUCK did you delete the database");
+        fs.writeFileSync(`${__dirname}/../db.sqlite3`, '');
+    }
     user.declareModel(sequelize);
     sequelize.authenticate();
     (async () => {
         await sequelize.sync();
+        await console.log(`Database ${sequelize.getDatabaseName()} ready!`);
     })() // Idk why this works but it does, please don't change it
-    console.log(`Database ${sequelize.getDatabaseName()} ready!`);
 } catch (err) {
-    console.log('Connecting to the database failed!', err)
+    console.log('Initializing the database failed!', err)
 }
 client.login(process.env.DISCORD_TOKEN);
