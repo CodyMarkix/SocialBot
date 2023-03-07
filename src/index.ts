@@ -79,4 +79,5 @@ try {
 } catch (err) {
     console.log('Initializing the database failed!', err)
 }
+
 client.login(process.env.DISCORD_TOKEN);
