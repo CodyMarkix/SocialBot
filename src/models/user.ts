@@ -1,18 +1,33 @@
-import { sequelize } from '../index';
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Sequelize } from 'sequelize';
 
-export class User extends Model {}
-User.init({
-    userName: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    }
-    }, {
-    sequelize,
-    modelName: 'User'
-});
-  
+class User extends Model {}
+
+function declareModel(db: Sequelize) {
+    User.init({
+        userName: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        xp: {
+            type: DataTypes.FLOAT,
+            allowNull: false
+        }
+        }, {
+        sequelize: db,
+        modelName: 'User'
+    });
+}
+
+export {
+    User,
+    declareModel
+};
+
+export default {
+    User,
+    declareModel
+};

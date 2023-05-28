@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import path from 'path';
 import { Sequelize } from 'sequelize';
 import { exec } from 'child_process';
+import user from './models/user';
 
 // Registering environment variables
 env.config({
@@ -13,9 +14,9 @@ env.config({
 
 function isProductionEnv() {
     let command = exec("grep -i PRETTY_NAME /etc/os-release");
-    if (command.stderr) {
-        return false
-    } else if (command.stdout?.read() == "PRETTY_NAME=\"Debian GNU/Linux 11 (bullseye)\"") {
+    // Thank Markix's brother for the one-line if statements
+    if (command.stderr) return false
+    if (command.stdout?.read() == "PRETTY_NAME=\"Debian GNU/Linux 11 (bullseye)\"") {
         console.log(command.stdout)
         return true
     } else {
@@ -32,25 +33,21 @@ const client = new Discord.Client({
     ]
 });
 
-const dbhost = isProductionEnv() ? 'localhost' : '192.168.0.100';
-export const sequelize = new Sequelize({
-    dialect: 'mysql',
-    host: '192.168.0.100',
-    port: 3306,
-    username: 'root',
-    password: 'root19857',
-    database: `socialbot_${process.env.DBTYPE}`
+// The database instance
+const sequelize: Sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: `${__dirname}/../db.sqlite3`
 });
 
+// Command collection
 client.commands = new Collection();
 
 // Event handling
 const eventFiles = fs.readdirSync(`${__dirname}/events`).filter(file => file.endsWith('js'));
 for (const file of eventFiles) {
-    // For some reason, import can't be used here
+    // Have to use commonjs import here, don't ask questions
     const event = require(`./events/${file}`);
-
-
+    
     if (event.once) {
         client.once(event.name, (...args) => event.execute(...args));
     } else {
@@ -69,12 +66,23 @@ for (const file of commandFiles) {
 }
 
 try {
+    if (!fs.existsSync(`${__dirname}/../db.sqlite3`)) {
+        console.log("Why the FUCK did you delete the database");
+        fs.writeFileSync(`${__dirname}/../db.sqlite3`, '');
+        
+        setTimeout(() => {
+            console.log("Don't make the same mistake again")
+            process.exit(61);
+        }, 25);
+    }
+    user.declareModel(sequelize);
     sequelize.authenticate();
     (async () => {
-        await sequelize.sync({ force: true});
+        await sequelize.sync();
+        await console.log(`Database ${sequelize.getDatabaseName()} ready!`);
     })() // Idk why this works but it does, please don't change it
-    console.log(`Database ${sequelize.getDatabaseName()} ready!`);
 } catch (err) {
-    console.error('Connecting to the database failed!', err)
+    console.log('Initializing the database failed!', err)
 }
+
 client.login(process.env.DISCORD_TOKEN);

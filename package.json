@@ -2,14 +2,14 @@
   "name": "social-bot",
   "version": "1.0.0",
   "description": "SocialBot Discord bot",
-  "main": "dist/index.js",
   "scripts": {
     "build": "tsc -p .",
-    "deploy-cmd": "node deploy-commands.js deploy",
-    "rm-cmd": "node deploy-commands.js rm",
+    "clear": "rm -rf dist/**/*",
+    "deploy-cmd": "node scripts/deploy-commands.js deploy",
+    "rm-cmd": "node scripts/deploy-commands.js rm",
     "start": "node dist/index.js",
     "dev": "cd dist/ && tsc -w -p ..",
-    "deploy": "wget --method=GET --body-data=\"$(tar -cvzO dist/ | base64)\" https://socialbot.codymarkix.repl.co/upload"
+    "full-deploy": "rm dist/**/* && npm run build && npm run rm-cmd && npm run deploy-cmd && npm start"
   },
   "repository": {
     "type": "git",
@@ -27,12 +27,19 @@
   "homepage": "https://github.com/CodyMarkix/SocialBot#readme",
   "dependencies": {
     "@discordjs/builders": "^1.2.0",
+    "@discordjs/opus": "^0.9.0",
+    "@discordjs/rest": "^1.5.0",
+    "@discordjs/voice": "^0.14.0",
     "@types/express": "^4.17.14",
     "discord.js": "^14.4.0",
     "dotenv": "^16.0.2",
     "express": "^4.18.1",
-    "mysql2": "^2.3.3",
+    "ffmpeg": "^0.0.4",
+    "ffmpeg-static": "^5.1.0",
+    "libsodium-wrappers": "^0.7.11",
     "sequelize": "^6.23.2",
-    "ts-node": "^10.9.1"
+    "sqlite3": "^5.1.2",
+    "ts-node": "^10.9.1",
+    "ytdl-core-discord": "^1.3.1"
   }
 }
