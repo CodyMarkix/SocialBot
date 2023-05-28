@@ -5,13 +5,51 @@
         }
     ],
     "settings": {
-        "sqltools.connections": [
+
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
             {
-                "previewLimit": 50,
-                "driver": "SQLite",
-                "name": "SocialBot",
-                "database": "${workspaceFolder}/db.sqlite3"
+                "type": "typescript",
+                "tsconfig": "tsconfig.json",
+                "problemMatcher": [
+                    "$tsc"
+                ],
+                "group": "build",
+                "label": "tsc: build"
+            }
+        ]
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                // You might not want to use this yet
+                "type": "node",
+                "request": "launch",
+                "name": "Launch Program",
+                "skipFiles": [
+                    "<node_internals>/**"
+                ],
+                "preLaunchTask": "tsc: build",
+                "program": "${workspaceFolder}/src/index.ts",
+                "outFiles": [
+                    "${workspaceFolder}/dist/**/*.js"
+                ]
+            },
+            {
+                "name": "Deploy Commands",
+                "program": "${workspaceFolder}/scripts/deploy-commands.js",
+                "cwd": "${workspaceFolder}",
+                "args":[
+                    "deploy"
+                ],
+                "request": "launch",
+                "skipFiles": [
+                    "<node_internals>/**"
+                ],
+                "type": "node"
             }
         ]
     }
-}

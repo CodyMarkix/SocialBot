@@ -8,8 +8,8 @@ module.exports = {
         .setDescription('Stop příkaz'),
 
     async execute(interaction: CommandInteraction) {
-        const connection = getVoiceConnection("826444819299565610")
-        connection?.disconnect()
+        const connection = getVoiceConnection("775761665786511370")
+        connection?.destroy()
         interaction.reply("shit")
     }
 }

@@ -3,6 +3,8 @@ import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import { joinVoiceChannel, createAudioPlayer, getVoiceConnections, StreamType, AudioPlayerStatus } from "@discordjs/voice";
 import { createAudioResource } from "@discordjs/voice";
 import ytdl from 'ytdl-core';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -82,7 +84,13 @@ module.exports = {
     async execute(interaction: CommandInteraction) {
         const link = interaction.options.get('link')?.value?.toString();
         const player = createAudioPlayer();
-        const resource = createAudioResource(ytdl(`${link}`, { filter: "audioonly" }), { inlineVolume: 1.0, inputType: StreamType.WebmOpus });
+
+        player.on('error', error => {
+            console.log(error);
+        })
+
+        const download = ytdl(`${link}`);
+        const resource = createAudioResource(createReadStream(join(__dirname, 'limbocut.ogg')), { inputType: StreamType.OggOpus });
 
         player.play(resource);
 
