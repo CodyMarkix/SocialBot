@@ -69,6 +69,11 @@ try {
     if (!fs.existsSync(`${__dirname}/../db.sqlite3`)) {
         console.log("Why the FUCK did you delete the database");
         fs.writeFileSync(`${__dirname}/../db.sqlite3`, '');
+        
+        setTimeout(() => {
+            console.log("Don't make the same mistake again")
+            process.exit(61);
+        }, 25);
     }
     user.declareModel(sequelize);
     sequelize.authenticate();
