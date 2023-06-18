@@ -1,11 +1,12 @@
 // Importing libraries
-import Discord, { Client, Collection, IntentsBitField } from 'discord.js';
+import Discord, { Client, Collection, IntentsBitField, TextChannel } from 'discord.js';
 import env from 'dotenv';
 import * as fs from 'fs';
 import path from 'path';
 import { Sequelize } from 'sequelize';
 import { exec } from 'child_process';
-import user from './models/user';
+import { User } from './models/user';
+import { WebServer } from './server/server';
 
 // Registering environment variables
 env.config({
@@ -29,7 +30,8 @@ const client = new Discord.Client({
     intents: [
         // IDK why but Discord changed Intents to IntentsBitField
         IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.GuildMessages
+        IntentsBitField.Flags.GuildMessages,
+        IntentsBitField.Flags.GuildMembers
     ]
 });
 
@@ -38,6 +40,12 @@ const sequelize: Sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: `${__dirname}/../db.sqlite3`
 });
+
+// The Dashboard
+const dashboard = new WebServer(client);
+dashboard.registerRoutes();
+dashboard.startServer(3001);
+console.log("Dashboard API ready!")
 
 // Command collection
 client.commands = new Collection();
@@ -67,15 +75,16 @@ for (const file of commandFiles) {
 
 try {
     if (!fs.existsSync(`${__dirname}/../db.sqlite3`)) {
-        console.log("Why the FUCK did you delete the database");
         fs.writeFileSync(`${__dirname}/../db.sqlite3`, '');
-        
-        setTimeout(() => {
-            console.log("Don't make the same mistake again")
-            process.exit(61);
-        }, 25);
     }
-    user.declareModel(sequelize);
+
+    const modelsList = fs.readdirSync(path.join(__dirname, 'models'));
+    for (const modelFile of modelsList) {
+        const model = require(path.join(path.join(__dirname, 'models'), modelFile));
+        model.declareModel(sequelize)
+        console.log(`${modelFile.split('.')[0]} ready!`)
+    }
+
     sequelize.authenticate();
     (async () => {
         await sequelize.sync();
