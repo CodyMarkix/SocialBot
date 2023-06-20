@@ -4,3 +4,4 @@ README.md
 SocialBotTS.code-workspace
 db.sqlite3
 .env
+node_modules
