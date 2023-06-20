@@ -1,33 +1,36 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
-class User extends Model {}
+class APIKeys extends Model {}
 
 function declareModel(db: Sequelize) {
-    User.init({
-            userName: {
+    APIKeys.init({
+            keyOwner: {
                 type: DataTypes.STRING,
                 allowNull: false
             },
-            userId: {
-                type: DataTypes.INTEGER,
+            key: {
+                type: DataTypes.STRING,
                 allowNull: false
             },
-            xp: {
-                type: DataTypes.FLOAT,
+            registrar: {
+                type: DataTypes.STRING
+            },
+            registrationDate: {
+                type: DataTypes.DATE,
                 allowNull: false
             }
         }, {
         sequelize: db,
-        modelName: 'User'
+        modelName: 'APIKeys'
     });
 }
 
 export {
-    User,
+    APIKeys,
     declareModel
 };
 
 export default {
-    User,
+    APIKeys,
     declareModel
 };

@@ -1,3 +1,4 @@
+# The obvious
 .env
 dist/
 node_modules/
@@ -6,9 +7,5 @@ package-lock.json
 # Database
 *.sqlite3
 
-# Replit shit
-.replit
-replit.nix
-.upm
-.cache
-.config
+# Bot configuration
+botconfig.json

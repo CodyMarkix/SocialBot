@@ -1,35 +1,28 @@
 // Importing libraries
-import Discord, { Client, Collection, IntentsBitField } from 'discord.js';
+import Discord, { Client, Collection, IntentsBitField, TextChannel } from 'discord.js';
 import env from 'dotenv';
 import * as fs from 'fs';
 import path from 'path';
 import { Sequelize } from 'sequelize';
 import { exec } from 'child_process';
-import user from './models/user';
+import { User } from './models/user';
+import { WebServer } from './server/server';
+
+// Initializing the bot's configuration
+import { configObject } from './config/botConfig';
 
 // Registering environment variables
 env.config({
     path: `${__dirname}/../.env`
 });
 
-function isProductionEnv() {
-    let command = exec("grep -i PRETTY_NAME /etc/os-release");
-    // Thank Markix's brother for the one-line if statements
-    if (command.stderr) return false
-    if (command.stdout?.read() == "PRETTY_NAME=\"Debian GNU/Linux 11 (bullseye)\"") {
-        console.log(command.stdout)
-        return true
-    } else {
-        return false
-    }
-}
-
 // Initializing the client, database and creating a command collection
 const client = new Discord.Client({
     intents: [
         // IDK why but Discord changed Intents to IntentsBitField
         IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.GuildMessages
+        IntentsBitField.Flags.GuildMessages,
+        IntentsBitField.Flags.GuildMembers
     ]
 });
 
@@ -39,43 +32,64 @@ const sequelize: Sequelize = new Sequelize({
     storage: `${__dirname}/../db.sqlite3`
 });
 
+// The Dashboard
+const dashboard = new WebServer(client);
+dashboard.registerRoutes();
+dashboard.startServer(8080);
+console.log("Dashboard API ready!")
+
 // Command collection
 client.commands = new Collection();
 
 // Event handling
-const eventFiles = fs.readdirSync(`${__dirname}/events`).filter(file => file.endsWith('js'));
+const eventFiles = fs.readdirSync(`${__dirname}/events`).filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
     // Have to use commonjs import here, don't ask questions
-    const event = require(`./events/${file}`);
-    
-    if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args));
-    } else {
-        client.on(event.name, (...args) => event.execute(...args));
-    }
-}
+    if (!file.endsWith('.map')) {
+        const event = require(`./events/${file}`);
 
+        if (event.once) {
+            client.once(event.name, (...args) => event.execute(...args));
+        } else {
+            client.on(event.name, (...args) => event.execute(...args));
+        };
+    } else {
+        continue
+    };
+};
+
+// Command handler
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
+// For every command file in src/commands...
 for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
+    const command = require(filePath); // ...import it...  
 
-    client.commands.set(command.data.name, command);
+    client.commands.set(command.data.name, command); // ...and add it to the bot
+    // kind of weird that this is still a thing, I imagine 
 }
 
 try {
+    // Create the database if it doesn't exist
     if (!fs.existsSync(`${__dirname}/../db.sqlite3`)) {
-        console.log("Why the FUCK did you delete the database");
         fs.writeFileSync(`${__dirname}/../db.sqlite3`, '');
-        
-        setTimeout(() => {
-            console.log("Don't make the same mistake again")
-            process.exit(61);
-        }, 25);
     }
-    user.declareModel(sequelize);
+
+    // Look for all models and declare them
+    const modelsList = fs.readdirSync(path.join(__dirname, 'models'));
+    for (const modelFile of modelsList) {
+        if (modelFile.endsWith('.js') && !modelFile.endsWith('.map')) {
+            const model = require(path.join(path.join(__dirname, 'models'), modelFile));
+            model.declareModel(sequelize)
+            console.log(`${modelFile.split('.')[0]} ready!`) // *MAYBE* I am gonna write a fancier logger, or just commit npm
+        } else {
+            continue
+        }
+    }
+
+    // Log into the database
     sequelize.authenticate();
     (async () => {
         await sequelize.sync();
@@ -85,4 +99,5 @@ try {
     console.log('Initializing the database failed!', err)
 }
 
+// Log into the Discord client
 client.login(process.env.DISCORD_TOKEN);
