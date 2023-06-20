@@ -1,0 +1,6 @@
+.gitignore
+LICENSE.md
+README.md
+SocialBotTS.code-workspace
+db.sqlite3
+.env
