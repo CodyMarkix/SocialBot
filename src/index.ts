@@ -35,7 +35,7 @@ const sequelize: Sequelize = new Sequelize({
 // The Dashboard
 const dashboard = new WebServer(client);
 dashboard.registerRoutes();
-dashboard.startServer(3001);
+dashboard.startServer(8080);
 console.log("Dashboard API ready!")
 
 // Command collection
