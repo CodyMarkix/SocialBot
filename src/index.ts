@@ -8,22 +8,13 @@ import { exec } from 'child_process';
 import { User } from './models/user';
 import { WebServer } from './server/server';
 
+// Initializing the bot's configuration
+import { configObject } from './config/botConfig';
+
 // Registering environment variables
 env.config({
     path: `${__dirname}/../.env`
 });
-
-function isProductionEnv() {
-    let command = exec("grep -i PRETTY_NAME /etc/os-release");
-    // Thank Markix's brother for the one-line if statements
-    if (command.stderr) return false
-    if (command.stdout?.read() == "PRETTY_NAME=\"Debian GNU/Linux 11 (bullseye)\"") {
-        console.log(command.stdout)
-        return true
-    } else {
-        return false
-    }
-}
 
 // Initializing the client, database and creating a command collection
 const client = new Discord.Client({
@@ -51,40 +42,54 @@ console.log("Dashboard API ready!")
 client.commands = new Collection();
 
 // Event handling
-const eventFiles = fs.readdirSync(`${__dirname}/events`).filter(file => file.endsWith('js'));
+const eventFiles = fs.readdirSync(`${__dirname}/events`).filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
     // Have to use commonjs import here, don't ask questions
-    const event = require(`./events/${file}`);
-    
-    if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args));
-    } else {
-        client.on(event.name, (...args) => event.execute(...args));
-    }
-}
+    if (!file.endsWith('.map')) {
+        const event = require(`./events/${file}`);
 
+        if (event.once) {
+            client.once(event.name, (...args) => event.execute(...args));
+        } else {
+            client.on(event.name, (...args) => event.execute(...args));
+        };
+    } else {
+        continue
+    };
+};
+
+// Command handler
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
+// For every command file in src/commands...
 for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
+    const command = require(filePath); // ...import it...  
 
-    client.commands.set(command.data.name, command);
+    client.commands.set(command.data.name, command); // ...and add it to the bot
+    // kind of weird that this is still a thing, I imagine 
 }
 
 try {
+    // Create the database if it doesn't exist
     if (!fs.existsSync(`${__dirname}/../db.sqlite3`)) {
         fs.writeFileSync(`${__dirname}/../db.sqlite3`, '');
     }
 
+    // Look for all models and declare them
     const modelsList = fs.readdirSync(path.join(__dirname, 'models'));
     for (const modelFile of modelsList) {
-        const model = require(path.join(path.join(__dirname, 'models'), modelFile));
-        model.declareModel(sequelize)
-        console.log(`${modelFile.split('.')[0]} ready!`)
+        if (modelFile.endsWith('.js') && !modelFile.endsWith('.map')) {
+            const model = require(path.join(path.join(__dirname, 'models'), modelFile));
+            model.declareModel(sequelize)
+            console.log(`${modelFile.split('.')[0]} ready!`) // *MAYBE* I am gonna write a fancier logger, or just commit npm
+        } else {
+            continue
+        }
     }
 
+    // Log into the database
     sequelize.authenticate();
     (async () => {
         await sequelize.sync();
@@ -94,4 +99,5 @@ try {
     console.log('Initializing the database failed!', err)
 }
 
+// Log into the Discord client
 client.login(process.env.DISCORD_TOKEN);

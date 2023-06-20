@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 
 export function handleError(res: Response, code: number) {
     switch (code) {

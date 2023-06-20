@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { webServerRoute } from '../../interfaces/webServerRoute'; 
-import { Client, DataManager, GuildBasedChannel } from 'discord.js';
+import { Client } from 'discord.js';
 import { handleError } from '../errorhandler';
 
 const main: webServerRoute = {

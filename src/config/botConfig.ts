@@ -1,12 +1,7 @@
 import { readFileSync, existsSync } from 'fs';
 import path from 'path';
 
-declare global {
-    let configObject: object;
+export let configObject: object = existsSync(path.join(__dirname, '..', '..', 'botconfig.json')) ? JSON.parse(readFileSync(path.join(__dirname, '..', '..', 'botconfig.json'), 'utf-8')) : {
+    nickname: "Social Bot Dev Branch"
+    // promise this will be more full
 };
-
-configObject = existsSync(path.join(__dirname, '..', '..', 'botconfig.json')) ? JSON.parse(readFileSync(path.join(), 'utf-8')) : {
-    
-};
-
-export { configObject };

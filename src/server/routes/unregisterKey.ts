@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { webServerRoute } from '../../interfaces/webServerRoute';
 import { Client } from 'discord.js';
-import crypto from 'crypto';
 import { APIKeys } from '../../models/apikeys';
 import { handleError } from '../errorhandler';
 
