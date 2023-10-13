@@ -6,11 +6,11 @@ const enter_the_code: Command = {
     data: new SlashCommandBuilder()
         .setName("ENteR tHe coDE")
         .setDescription("lol no")
-        .addStringOption(option =>
-            option.setName('input')
-                .setDescription('The input to echo back')
-                .setRequired(true))
-                
+        
+    async execute(interaction: CommandInteraction) {
+        interaction.reply("Pong! :ping_pong:");
     }
+                
+}
 
 module.exports = enter_the_code;
