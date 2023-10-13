@@ -8,7 +8,7 @@ const enter_the_code: Command = {
         .setDescription("lol no")
         
     async execute(interaction: CommandInteraction) {
-        interaction.reply("Pong! :ping_pong:");
+        interaction.reply("https://argserver--loph2546.repl.co");
     }
                 
 }
